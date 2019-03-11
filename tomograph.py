@@ -25,10 +25,10 @@ def generate_angles(theta):
     return [theta * i for i in range(int(np.ceil(full_angle / theta)))]
 
 
-def radon(image_original, theta, detectors_quantity, span):
+def radon(image, theta, detectors_quantity, span):
     angles = generate_angles(theta)
     sinogram = []
-    h, w = image_original.shape
+    h, w = image.shape
     detector_step = span / detectors_quantity
     center = Point(w // 2, h // 2)
     zero = Point(w // 2, 1)
@@ -41,7 +41,7 @@ def radon(image_original, theta, detectors_quantity, span):
             path = bresenham.bresenham_indexes(source, detector)
             p1 = path[:, 0]
             p2 = path[:, 1]
-            measurements.append(image_original[p1, p2].sum())
+            measurements.append(image[p1, p2].sum())
         sinogram.append(measurements)
     sinogram = sinogram / np.amax(sinogram)
     return sinogram
