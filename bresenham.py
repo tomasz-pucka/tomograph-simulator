@@ -13,7 +13,7 @@ def bresenham_indexes(A, B):
     if dx > dy:
         e = dx / 2.0
         while x != x1:
-            path.append([x,y])
+            path.append([x, y])
             e -= dy
             if e < 0:
                 y += ky
@@ -22,7 +22,7 @@ def bresenham_indexes(A, B):
     else:
         e = dy / 2.0
         while y != y1:
-            path.append([x,y])
+            path.append([x, y])
             e -= dx
             if e < 0:
                 x += kx

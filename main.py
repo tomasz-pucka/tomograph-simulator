@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import tomograph
+import filter
 from skimage.io import imread
 
 
@@ -22,16 +23,26 @@ def make_image_square(image_original):
     return np.pad(image_original, pad_width, mode='constant', constant_values=0)
 
 
-params = Params("examples/CT_ScoutView.jpg", 2, 200, 180)
+params = Params("examples/sl100.jpg", 1, 100, 180)
 image_original = imread(params.image_path, as_gray=True)
 image_padded = make_image_square(image_original)
 sinogram = tomograph.radon(image_padded, params.theta, params.detector_quantity, params.span)
+sinogram_filtered = filter.ramp_filter(sinogram, "ramp")
+image_reconstructed_filtered = tomograph.inverse_radon(sinogram_filtered, image_padded.shape[0], params.theta,
+                                                       params.detector_quantity, params.span)
+image_reconstructed = tomograph.inverse_radon(sinogram, image_padded.shape[0], params.theta, params.detector_quantity,
+                                              params.span)
 
-fig, (ax1, ax2) = plt.subplots(1, 2)
-ax1.set_title("Original image")
-ax2.set_title("Sinogram")
-ax2.set_xlabel("Detector Index")
-ax2.set_ylabel("Projection step")
-ax1.imshow(image_padded, cmap="gray")
-ax2.imshow(sinogram, cmap="gray")
+fig, ax = plt.subplots(2, 2)
+ax[0, 0].set_title("Original image")
+ax[0, 1].set_title("Sinogram")
+ax[1, 0].set_title("Reconstructed image")
+ax[1, 1].set_title("Filtered and reconstructed image")
+ax[0, 1].set_xlabel("Detector Index")
+ax[0, 1].set_ylabel("Projection step")
+ax[0, 0].imshow(image_padded, cmap="gray")
+ax[0, 1].imshow(sinogram, cmap="gray")
+ax[1, 0].imshow(image_reconstructed, cmap="gray")
+ax[1, 1].imshow(image_reconstructed_filtered, cmap="gray")
+plt.tight_layout(0, -0.8, 0)
 plt.show()
