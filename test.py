@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import tomograph
 import filter
 from skimage.io import imread
+from skimage.transform import rescale
 
 
 class Params:
@@ -23,14 +24,15 @@ def make_image_square(image_original):
     return np.pad(image_original, pad_width, mode='constant', constant_values=0)
 
 
-params = Params("examples/sl100.jpg", 1, 100, 180)
+params = Params("examples/Kwadraty2.jpg", 4, 100, 180)
 image_original = imread(params.image_path, as_gray=True)
-image_padded = make_image_square(image_original)
-sinogram = tomograph.radon(image_padded, params.theta, params.detector_quantity, params.span)
-sinogram_filtered = filter.ramp_filter(sinogram, "ramp")
-image_reconstructed_filtered = tomograph.inverse_radon(sinogram_filtered, image_padded.shape[0], params.theta,
-                                                       params.detector_quantity, params.span)
-image_reconstructed = tomograph.inverse_radon(sinogram, image_padded.shape[0], params.theta, params.detector_quantity,
+image_rescaled = rescale(image_original, scale=0.4)
+image_padded = make_image_square(image_rescaled)
+emitter_angles = tomograph.generate_angles(params.theta)
+sinogram = tomograph.radon(image_padded, emitter_angles, params.detector_quantity, params.span)
+sinogram_filtered = filter.filter_sinogram(sinogram, "ramp")
+image_reconstructed_filtered = tomograph.inverse_radon(sinogram_filtered, image_padded.shape[0], emitter_angles, params.detector_quantity, params.span)
+image_reconstructed = tomograph.inverse_radon(sinogram, image_padded.shape[0], emitter_angles, params.detector_quantity,
                                               params.span)
 
 fig, ax = plt.subplots(2, 2)

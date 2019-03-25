@@ -32,18 +32,18 @@ def IDFT(F):
          for l in range_N] for k in range_M]
 
 
-def ramp_filter(sinogram, type):
+def filter_sinogram(sinogram, type):
     detector_quantity = sinogram.shape[1]
     ramp_array = generate_ramp_array(detector_quantity)
     omega = 2 * pi * ramp_array
     fourier_filter = 2 * abs(ramp_array)
-    if type == "shepp-logan":
+    if type == "Shepp-logan":
         fourier_filter[1:] = fourier_filter[1:] * sin(omega[1:]) / omega[1:]
-    elif type == "cosine":
+    elif type == "Cosine":
         fourier_filter *= cos(omega)
-    elif type == "hamming":
+    elif type == "Hamming":
         fourier_filter *= (0.54 + 0.46 * cos(omega / 2))
-    elif type == "hann":
+    elif type == "Hann":
         fourier_filter *= (1 + cos(omega / 2)) / 2
     # sinogram_freq_domain_filtered = DFT(sinogram) * ramp_filter
     # sinogram_filtered = real(IDFT(sinogram_freq_domain_filtered))

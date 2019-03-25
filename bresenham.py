@@ -1,5 +1,4 @@
-import numpy as np
-
+from numpy import array
 
 def bresenham_indexes(A, B):
     path = []
@@ -29,4 +28,4 @@ def bresenham_indexes(A, B):
                 e += dy
             y += ky
     path.append([x, y])
-    return np.array(path)
+    return array(path)
